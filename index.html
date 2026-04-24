@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="bg-layer" id="bg-layer"></div>
+
+    <div class="card">
+
+      <!-- Header -->
+      <div class="app-header">
+        <svg class="app-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm6.364 2.636a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM21 11a1 1 0 110 2h-1a1 1 0 110-2h1zM4.636 5.636a1 1 0 011.414 0l.707.707A1 1 0 115.343 7.757l-.707-.707a1 1 0 010-1.414zM4 11a1 1 0 110 2H3a1 1 0 110-2h1zm14.5 1a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" fill="currentColor"/>
+        </svg>
+        <span class="app-title">Weather</span>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 20l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" id="city-input" placeholder="Search city..." autocomplete="off" />
+        </div>
+        <button id="search-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <p id="error-msg" class="error-msg"></p>
+
+      <!-- Loading Spinner -->
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Current Weather -->
+      <div id="weather-main" class="weather-main hidden">
+
+        <div class="weather-hero">
+          <div class="weather-hero-left">
+            <div id="city-name" class="city-name"></div>
+            <div id="temperature" class="temperature"></div>
+            <div id="condition" class="condition"></div>
+          </div>
+          <div class="weather-hero-right">
+            <img id="weather-icon" class="weather-icon" src="" alt="weather icon" />
+          </div>
+        </div>
+
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2a5 5 0 015 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 015-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="2" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <span class="detail-label">Feels Like</span>
+            <span id="feels-like" class="detail-value"></span>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8 2 5 6 5 10c0 5.25 7 12 7 12s7-6.75 7-12c0-4-3-8-7-8z" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="12" cy="14" r="2" fill="currentColor"/>
+              </svg>
+            </div>
+            <span class="detail-label">Humidity</span>
+            <span id="humidity" class="detail-value"></span>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 8h10a3 3 0 010 6H5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M3 12h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M5 16h6a3 3 0 000-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="detail-label">Wind</span>
+            <span id="wind-speed" class="detail-value"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 5-Day Forecast -->
+      <div id="forecast-section" class="forecast-section hidden">
+        <div class="forecast-header">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 2v3M16 2v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>5-Day Forecast</span>
+        </div>
+        <div id="forecast-cards" class="forecast-cards"></div>
+      </div>
+
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
