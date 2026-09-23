@@ -1,7 +1,7 @@
 // ── Your API Key ──────────────────────────────────────────
 const API_KEY = "eab4f27a6c2c7ba71d428d56b15c6ae0"; // 👈 paste your key here
 
-const BASE_URL = "https://api.openweathermap.org/data/2.5"
+const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 // ── DOM References ────────────────────────────────────────
 // These grab each HTML element so we can read/update them
