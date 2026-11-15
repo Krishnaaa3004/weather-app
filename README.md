@@ -4,7 +4,7 @@ A clean and minimal weather web app built with vanilla HTML, CSS, and JavaScript
 Search any city to get real-time weather data and a 5-day forecast.
 
 ## 🔗 Live Demo
-[weather-app.netlify.app](https://krishna-weather-app.netlify.app)
+[weather-app.netlify.app](https://pranav-weather.netlify.app/))
 
 ## ✨ Features
 - Search weather by city name
