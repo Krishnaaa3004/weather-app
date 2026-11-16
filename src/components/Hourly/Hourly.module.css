@@ -1,0 +1,96 @@
+.scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  /* Let the page scroll vertically through the track on touch devices. */
+  touch-action: pan-x pan-y;
+  padding-inline: calc(var(--gutter) - 56px);
+  /* Fading both ends shows there is more track to pull into view. */
+  mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.scroller[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.track {
+  position: relative;
+  margin-inline: auto;
+}
+
+.chart {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.area {
+  fill: var(--wash);
+}
+
+.line {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.drop,
+.axis {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.dot {
+  fill: var(--fg);
+}
+
+/* The accent marks "now". The ring keeps it visible on skies close to the accent's own tone. */
+.nowDot {
+  fill: var(--accent);
+  stroke: var(--fg);
+  stroke-width: 1.5;
+}
+
+.hours {
+  position: absolute;
+  inset: 0;
+}
+
+.hour {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 96px;
+  margin-left: -48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.temp {
+  position: absolute;
+  font-size: var(--text-lead);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.time {
+  margin-top: auto;
+  padding-top: 0;
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+}
+
+.rain {
+  height: 1.25rem;
+  font-size: var(--text-label);
+  color: var(--fg-muted);
+}
