@@ -35,7 +35,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), netlifyFunctionDev()],
-    build: { target: 'es2022' },
+    // Source maps ship on purpose: the code is public, and they make production errors readable.
+    // three.js alone is ~540 kB minified; it is a lazy chunk, so the default 500 kB warning is noise.
+    build: { target: 'es2022', sourcemap: true, chunkSizeWarningLimit: 700 },
     test: { environment: 'node' },
   };
 });

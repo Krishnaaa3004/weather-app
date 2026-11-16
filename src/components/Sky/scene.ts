@@ -72,6 +72,20 @@ const LAYER_SPACING = 6.5;
 /** How far the camera travels over the full length of the page. */
 const CAMERA_TRAVEL = 26;
 
+/** Frames sampled before judging whether the device can afford the scene. */
+const PROBE_FRAMES = 40;
+/** Average frame time, in ms, above which the scene first drops resolution and then gives up. */
+const SLOW_FRAME_MS = 34;
+
+export interface SkySceneOptions {
+  quality: Quality;
+  /** Render even on a software rasteriser. Only for screenshots and tests. */
+  allowSoftware: boolean;
+  onFirstFrame: () => void;
+  /** Called if the device proves too slow; the caller should fall back to the CSS sky. */
+  onTooSlow: () => void;
+}
+
 /** A tileable greyscale fbm texture, generated once on the CPU. */
 function createNoiseTexture(size = 256): DataTexture {
   const lattice = (period: number) => {
@@ -121,6 +135,17 @@ function createNoiseTexture(size = 256): DataTexture {
   return texture;
 }
 
+/**
+ * Some browsers hand out a WebGL context backed by a CPU rasteriser
+ * (SwiftShader, llvmpipe) without flagging it as a performance caveat.
+ */
+function isSoftwareRenderer(renderer: WebGLRenderer): boolean {
+  const gl = renderer.getContext();
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  const name = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER));
+  return /swiftshader|llvmpipe|software|basic render/i.test(name);
+}
+
 /** Frame-rate independent easing toward a target. */
 const approach = (current: number, target: number, rate: number, dt: number) =>
   current + (target - current) * (1 - Math.exp(-rate * dt));
@@ -152,14 +177,28 @@ export class SkyScene {
   private frame = 0;
   private lastFrameAt = 0;
   private hasRendered = false;
+  private probeFrames = 0;
+  private probeTime = 0;
+  private hasDowngraded = false;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    quality: Quality,
-    private readonly onFirstFrame: () => void,
+    private readonly options: SkySceneOptions,
   ) {
-    this.settings = QUALITY[quality];
-    this.renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'low-power' });
+    this.settings = { ...QUALITY[options.quality] };
+    this.renderer = new WebGLRenderer({
+      canvas,
+      antialias: false,
+      alpha: false,
+      powerPreference: 'low-power',
+      // Without a GPU the browser rasterises WebGL on the CPU, which would
+      // stall the page. Refusing the context leaves the CSS gradient in place.
+      failIfMajorPerformanceCaveat: !options.allowSoftware,
+    });
+    if (!options.allowSoftware && isSoftwareRenderer(this.renderer)) {
+      this.renderer.dispose();
+      throw new Error('WebGL is software-rendered');
+    }
     this.renderer.setPixelRatio(this.settings.pixelRatio);
 
     this.background = new ShaderMaterial({
@@ -279,6 +318,7 @@ export class SkyScene {
   private readonly render = (timestamp: number): void => {
     this.frame = requestAnimationFrame(this.render);
     const dt = this.lastFrameAt ? Math.min(0.1, (timestamp - this.lastFrameAt) / 1000) : 0.016;
+    if (this.lastFrameAt && !this.options.allowSoftware && this.checkBudget(timestamp - this.lastFrameAt)) return;
     this.lastFrameAt = timestamp;
     this.time += dt;
 
@@ -320,9 +360,39 @@ export class SkyScene {
 
     if (!this.hasRendered) {
       this.hasRendered = true;
-      this.onFirstFrame();
+      this.options.onFirstFrame();
     }
   };
+
+  /**
+   * Measures real frame times. A device that cannot keep up gets one chance
+   * at half resolution; if that is still slow the scene stops itself.
+   * Returns true when the scene has given up.
+   */
+  private checkBudget(frameMs: number): boolean {
+    if (this.probeFrames < 0) return false;
+    this.probeFrames += 1;
+    this.probeTime += frameMs;
+    if (this.probeFrames < PROBE_FRAMES) return false;
+
+    const average = this.probeTime / this.probeFrames;
+    this.probeFrames = 0;
+    this.probeTime = 0;
+    if (average <= SLOW_FRAME_MS) {
+      this.probeFrames = -1; // Fast enough: stop measuring.
+      return false;
+    }
+    if (!this.hasDowngraded) {
+      this.hasDowngraded = true;
+      this.settings.pixelRatio *= 0.5;
+      this.renderer.setPixelRatio(this.settings.pixelRatio);
+      this.resize();
+      return false;
+    }
+    cancelAnimationFrame(this.frame);
+    this.options.onTooSlow();
+    return true;
+  }
 
   private updateLightning(active: boolean, dt: number): void {
     this.flash = Math.max(0, this.flash - dt * 0.9);

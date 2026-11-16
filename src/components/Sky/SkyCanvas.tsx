@@ -12,14 +12,22 @@ export default function SkyCanvas({ state }: SkyCanvasProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const scene = useRef<SkyScene | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [gaveUp, setGaveUp] = useState(false);
   const { condition, phase, cover } = state;
 
   useEffect(() => {
     if (!canvas.current) return;
     try {
-      scene.current = new SkyScene(canvas.current, pickQuality(), () => setIsReady(true));
+      scene.current = new SkyScene(canvas.current, {
+        quality: pickQuality(),
+        // ?gl=software renders without a GPU, for automated screenshots.
+        allowSoftware: new URLSearchParams(window.location.search).get('gl') === 'software',
+        onFirstFrame: () => setIsReady(true),
+        onTooSlow: () => setGaveUp(true),
+      });
     } catch {
-      // No WebGL (old device, blocked GPU): leave the CSS gradient showing.
+      // No WebGL, or no GPU behind it: leave the CSS gradient showing.
+      setGaveUp(true);
       return;
     }
     return () => {
@@ -32,5 +40,6 @@ export default function SkyCanvas({ state }: SkyCanvasProps) {
     scene.current?.setTarget(sceneParamsFor({ condition, phase, cover }));
   }, [condition, phase, cover]);
 
-  return <canvas ref={canvas} className={styles.canvas} data-ready={isReady || undefined} />;
+  // Hiding the canvas (rather than unmounting it) fades the CSS sky back in underneath.
+  return <canvas ref={canvas} className={styles.canvas} data-ready={(isReady && !gaveUp) || undefined} />;
 }
