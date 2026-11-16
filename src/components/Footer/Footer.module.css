@@ -1,0 +1,33 @@
+.footer {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-4) var(--space-6);
+  margin: var(--space-8) var(--gutter) 0;
+  padding: var(--space-3) 0 var(--space-6);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-small);
+  line-height: 1.8;
+}
+
+.footer p + p {
+  margin-top: var(--space-1);
+  max-width: 52ch;
+}
+
+.footer a,
+.refresh {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.refresh:disabled {
+  text-decoration: none;
+  cursor: default;
+}
+
+@media (max-width: 760px) {
+  .footer {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,131 @@
+.skeleton,
+.error {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--space-12) + var(--space-2)) var(--gutter) var(--space-8);
+}
+
+.bone {
+  background: var(--wash);
+  border-radius: var(--radius);
+  animation: breathe 1.6s ease-in-out infinite alternate;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-6);
+}
+
+.figure {
+  width: min(32rem, 60%);
+  height: clamp(7rem, 22vw, 18rem);
+}
+
+.side {
+  width: 15rem;
+}
+
+@keyframes breathe {
+  from { opacity: 1; }
+  to { opacity: 0.45; }
+}
+
+.error {
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.errorTitle {
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.errorBody {
+  max-width: 44ch;
+  margin-top: var(--space-3);
+  font-size: var(--text-lead);
+  color: var(--fg-muted);
+}
+
+.button {
+  margin-top: var(--space-4);
+  min-height: 3rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--fg);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.button:hover {
+  background: var(--fg);
+  color: var(--sky-mid);
+}
+
+.notice {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-3);
+  z-index: 20;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  width: min(34rem, calc(100vw - 2 * var(--space-2)));
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  background: var(--fg);
+  color: var(--sky-mid);
+  border-radius: var(--radius);
+  font-size: var(--text-small);
+}
+
+.notice p {
+  flex: 1;
+  padding-block: 0.25rem;
+}
+
+.notice button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.notice button:focus-visible {
+  outline-color: var(--sky-mid);
+}
+
+.notice svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+@media (max-width: 760px) {
+  .bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .figure {
+    width: 70%;
+  }
+
+  .side {
+    width: 100%;
+  }
+}

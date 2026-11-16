@@ -1,0 +1,54 @@
+/*
+ * Design tokens. Spacing is an 8px grid, type is a fixed scale, and colour is
+ * not chosen here at all: the --sky-* and --fg values are written at runtime
+ * from the current sky (see lib/sky.ts and hooks/useSkyTheme.ts).
+ */
+
+/* Registering the sky colours as <color> lets the gradient itself transition. */
+@property --sky-top { syntax: '<color>'; inherits: true; initial-value: #060a14; }
+@property --sky-mid { syntax: '<color>'; inherits: true; initial-value: #0c1424; }
+@property --sky-low { syntax: '<color>'; inherits: true; initial-value: #172238; }
+
+:root {
+  /* Sky, overwritten at runtime. Defaults are the clear night sky. */
+  --sky-top: #060a14;
+  --sky-mid: #0c1424;
+  --sky-low: #172238;
+  --fg-rgb: 244 241 234;
+  --accent: #ffb454;
+  --surface: #18202f;
+
+  --fg: rgb(var(--fg-rgb));
+  --fg-muted: rgb(var(--fg-rgb) / 0.82); /* keep in sync with MUTED_ALPHA in lib/sky.ts */
+  --rule: rgb(var(--fg-rgb) / 0.22);
+  --rule-strong: rgb(var(--fg-rgb) / 0.6);
+  --wash: rgb(var(--fg-rgb) / 0.07);
+
+  /* Type */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-ui: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-label: 0.75rem;   /* 12 — uppercase labels */
+  --text-small: 0.875rem;  /* 14 */
+  --text-body: 1rem;       /* 16 */
+  --text-lead: 1.25rem;    /* 20 */
+  --text-title: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --text-display: clamp(2.5rem, 1.6rem + 4vw, 4.5rem);
+  --text-hero: clamp(9.5rem, 4rem + 27vw, 25rem);
+
+  /* Space: 8px grid */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-12: 6rem;
+  --space-16: 8rem;
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+
+  /* One radius, used sparingly. Panels are near-square on purpose. */
+  --radius: 2px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,0 +1,73 @@
+/* Stays in view while the longer list of readings scrolls past beside it. */
+.figure {
+  align-self: start;
+  position: sticky;
+  top: var(--space-8);
+}
+
+.arc {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.path {
+  fill: none;
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+}
+
+.travelled {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.5;
+}
+
+.horizon {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.sun {
+  fill: var(--accent);
+  stroke: var(--fg);
+  stroke-width: 1.5;
+}
+
+.sunDown {
+  fill: var(--fg);
+}
+
+.caption {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.time {
+  font-size: var(--text-lead);
+  font-weight: 500;
+}
+
+.centre {
+  text-align: center;
+}
+
+.end {
+  text-align: right;
+}
+
+.status {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.daylight {
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+}

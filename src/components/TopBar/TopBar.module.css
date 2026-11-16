@@ -1,0 +1,184 @@
+/* Slim and unboxed: it scrolls away with the hero rather than floating over content. */
+.bar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 22rem) 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--gutter);
+}
+
+.wordmark {
+  justify-self: start;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.glass {
+  position: absolute;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 0 0 1.75rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* The underline is the field's focus indicator; it doubles in weight. */
+.input:focus-visible {
+  border-bottom-color: var(--fg);
+  box-shadow: 0 1px 0 var(--fg);
+}
+
+.recent {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  inset-inline: 0;
+  padding: var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.recent ul {
+  margin: var(--space-1) 0;
+}
+
+.recentItem {
+  width: 100%;
+  min-height: 2.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+.recentItem:hover {
+  border-bottom-color: var(--fg);
+}
+
+.clear {
+  min-height: 2rem;
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.controls {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.locate {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.locate svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.locate svg[data-busy] {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.units {
+  display: flex;
+}
+
+.units button {
+  min-width: 2.75rem;
+  height: 2.75rem;
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  border-bottom: 1px solid transparent;
+}
+
+.units button[aria-pressed='true'] {
+  color: var(--fg);
+  font-weight: 600;
+  border-bottom-color: var(--fg);
+}
+
+/* A hairline that sweeps while a new city loads; the old report stays readable underneath. */
+.progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+
+.progress[data-active] {
+  opacity: 1;
+  animation: sweep 1.4s var(--ease-out) infinite;
+}
+
+@keyframes sweep {
+  0% { transform: scaleX(0); transform-origin: left; }
+  50% { transform: scaleX(1); transform-origin: left; }
+  51% { transform: scaleX(1); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@keyframes pulse {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+
+@media (max-width: 640px) {
+  .bar {
+    grid-template-columns: 1fr auto;
+    row-gap: 0;
+    padding-block: var(--space-2);
+  }
+
+  .search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

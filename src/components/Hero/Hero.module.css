@@ -1,0 +1,130 @@
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  padding: calc(var(--space-12) + var(--space-2)) var(--gutter) var(--space-8);
+  perspective: 1200px;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'place place'
+    '. .'
+    'temp now';
+  column-gap: var(--space-6);
+  align-items: end;
+}
+
+.place {
+  grid-area: place;
+}
+
+.city {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
+  margin-top: var(--space-2);
+  color: var(--fg-muted);
+}
+
+/* The one oversized element on the page. Everything else is set against it. */
+.temp {
+  grid-area: temp;
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  line-height: 0.74;
+  letter-spacing: -0.045em;
+  /* Pull the glyph's side bearing back so the figure aligns with the text above. */
+  margin-left: -0.04em;
+  padding-bottom: 0.06em;
+  white-space: nowrap;
+}
+
+.degree {
+  display: inline-block;
+  font-size: 0.42em;
+  vertical-align: 0.92em;
+  margin-left: 0.04em;
+  letter-spacing: 0;
+}
+
+.now {
+  grid-area: now;
+  min-width: 15rem;
+  padding-bottom: var(--space-1);
+}
+
+.condition {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  line-height: 1.1;
+}
+
+.range {
+  display: flex;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+}
+
+.range dd {
+  font-size: var(--text-lead);
+  font-weight: 500;
+}
+
+.cue {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.5rem;
+  text-decoration: none;
+}
+
+.cue svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding-top: calc(var(--space-16) + var(--space-2));
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'place'
+      '.'
+      'temp'
+      'now';
+    row-gap: var(--space-4);
+  }
+
+  .now {
+    min-width: 0;
+  }
+}
