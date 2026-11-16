@@ -62,7 +62,7 @@ const LOW_LIGHT: Record<Exclude<SkyPhase, 'day'>, Stops> = {
 /** How each condition alters a low-light sky: wash out colour, darken, then tint. */
 const WEATHERING: Record<SkyCondition, { wash: number; shade: number; tint?: [string, number] }> = {
   clear: { wash: 0, shade: 1 },
-  clouds: { wash: 0.5, shade: 0.95 },
+  clouds: { wash: 0.35, shade: 0.95 },
   rain: { wash: 0.7, shade: 0.85, tint: ['#27313d', 0.3] },
   storm: { wash: 0.8, shade: 0.7, tint: ['#161b24', 0.35] },
   snow: { wash: 0.5, shade: 0.92, tint: ['#5d6878', 0.12] },

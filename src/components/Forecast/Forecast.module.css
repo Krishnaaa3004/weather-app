@@ -156,3 +156,8 @@
     height: 29rem;
   }
 }
+
+/* The stage is full-bleed, so its focus ring is drawn inside the edge. */
+.stage:focus-visible {
+  outline-offset: -2px;
+}
