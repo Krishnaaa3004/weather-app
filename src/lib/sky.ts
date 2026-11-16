@@ -63,8 +63,8 @@ const LOW_LIGHT: Record<Exclude<SkyPhase, 'day'>, Stops> = {
 const WEATHERING: Record<SkyCondition, { wash: number; shade: number; tint?: [string, number] }> = {
   clear: { wash: 0, shade: 1 },
   clouds: { wash: 0.5, shade: 0.95 },
-  rain: { wash: 0.65, shade: 0.85 },
-  storm: { wash: 0.75, shade: 0.65 },
+  rain: { wash: 0.7, shade: 0.85, tint: ['#27313d', 0.3] },
+  storm: { wash: 0.8, shade: 0.7, tint: ['#161b24', 0.35] },
   snow: { wash: 0.5, shade: 0.92, tint: ['#5d6878', 0.12] },
   haze: { wash: 0.4, shade: 0.95, tint: ['#4f4032', 0.3] },
 };
@@ -89,9 +89,9 @@ export function paletteFor({ condition, phase }: Pick<SkyState, 'condition' | 'p
     low,
     fg,
     ink,
-    // Clouds brighten a light sky and only barely lift a dark one, so text
-    // contrast can never drop when a cloud drifts behind it.
-    cloud: ink === 'dark' ? mix(low, '#ffffff', 0.7) : mix(low, '#ffffff', 0.06),
+    // Clouds are paler than a light sky and darker than a dark one, so text
+    // contrast can only improve when a cloud drifts behind it.
+    cloud: ink === 'dark' ? mix(low, '#ffffff', 0.45) : mix(top, '#000000', 0.35),
     accent: ink === 'dark' ? '#a8300a' : '#ffb454',
     surface: mix(mid, fg, 0.05),
   };
@@ -159,7 +159,7 @@ export function sceneParamsFor(state: SkyState): SkySceneParams {
     clouds: 0.35 + cover * 0.45,
     rain: 0.8,
     snow: 0.7,
-    haze: 0.55,
+    haze: 0.5,
     storm: 0.92,
   };
   const particles: Record<SkyCondition, ParticleKind> = {
@@ -174,10 +174,22 @@ export function sceneParamsFor(state: SkyState): SkySceneParams {
   return {
     palette,
     cloudCover: cloudCover[condition],
-    cloudOpacity: palette.ink === 'dark' ? 0.55 : 0.5,
+    cloudOpacity: palette.ink === 'dark' ? 0.36 : 0.42,
     wind: condition === 'storm' ? 2.2 : condition === 'rain' ? 1.4 : 1,
     particles: particles[condition],
     stars: phase === 'night' && (condition === 'clear' || condition === 'clouds') ? 1 - cover * 0.8 : 0,
     lightning: condition === 'storm',
   };
+}
+
+/**
+ * Parses a `?sky=<condition>-<phase>` override, e.g. `?sky=storm-dusk`.
+ * Lets every sky be reviewed on demand instead of waiting for the weather.
+ */
+export function skyOverrideFrom(search: string): SkyState | null {
+  const [condition, phase] = (new URLSearchParams(search).get('sky') ?? '').split('-');
+  const isCondition = (SKY_CONDITIONS as readonly string[]).includes(condition ?? '');
+  const isPhase = (SKY_PHASES as readonly string[]).includes(phase ?? '');
+  if (!isCondition || !isPhase) return null;
+  return { condition: condition as SkyCondition, phase: phase as SkyPhase, cover: condition === 'clear' ? 0 : 0.7 };
 }
