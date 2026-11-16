@@ -6,7 +6,6 @@ import {
   fetchAirPollution,
   fetchCurrent,
   fetchForecast,
-  fetchUv,
   geocodeCity,
   reverseGeocode,
 } from '../../server/providers';
@@ -16,7 +15,7 @@ import type { ApiErrorBody, ApiErrorCode } from '../../src/types/weather';
  * GET /api/weather?q=<city>  or  /api/weather?lat=<lat>&lon=<lon>
  *
  * The browser only ever talks to this endpoint. It keeps the OpenWeatherMap
- * key on the server and collapses five upstream requests into one response.
+ * key on the server and collapses four upstream requests into one response.
  */
 export const config = { path: '/api/weather' };
 
@@ -79,11 +78,10 @@ export default async function handler(request: Request): Promise<Response> {
       coordinates = { lat: place.lat, lon: place.lon };
     }
 
-    const [current, forecast, air, uv] = await Promise.all([
+    const [current, forecast, air] = await Promise.all([
       fetchCurrent(key, coordinates),
       fetchForecast(key, coordinates),
       optional(fetchAirPollution(key, coordinates)),
-      optional(fetchUv(coordinates)),
     ]);
 
     const report = buildReport({
@@ -91,7 +89,6 @@ export default async function handler(request: Request): Promise<Response> {
       current,
       forecast,
       air,
-      uv,
     });
     // Conditions update roughly every ten minutes upstream; five is a safe cache.
     return json(report, 200, 300);

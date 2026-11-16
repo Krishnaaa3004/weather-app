@@ -4,7 +4,6 @@
  */
 
 const OWM = 'https://api.openweathermap.org';
-const OPEN_METEO = 'https://api.open-meteo.com/v1/forecast';
 const TIMEOUT_MS = 8000;
 
 export interface OwmCondition {
@@ -53,11 +52,6 @@ export interface OwmAirPollution {
   }>;
 }
 
-export interface OpenMeteoUv {
-  current?: { uv_index?: number };
-  daily?: { uv_index_max?: number[] };
-}
-
 /** An upstream failure that carries the HTTP status the provider returned. */
 export class ProviderError extends Error {
   constructor(
@@ -104,16 +98,4 @@ export function fetchForecast(key: string, { lat, lon }: Coordinates) {
 
 export function fetchAirPollution(key: string, { lat, lon }: Coordinates) {
   return getJson<OwmAirPollution>(owmUrl('/data/2.5/air_pollution', key, { lat, lon }), 'OpenWeatherMap');
-}
-
-/** The free OpenWeatherMap tier has no UV index, so that one value comes from Open-Meteo. */
-export function fetchUv({ lat, lon }: Coordinates) {
-  const url = new URL(OPEN_METEO);
-  url.searchParams.set('latitude', String(lat));
-  url.searchParams.set('longitude', String(lon));
-  url.searchParams.set('current', 'uv_index');
-  url.searchParams.set('daily', 'uv_index_max');
-  url.searchParams.set('timezone', 'auto');
-  url.searchParams.set('forecast_days', '1');
-  return getJson<OpenMeteoUv>(url, 'Open-Meteo');
 }

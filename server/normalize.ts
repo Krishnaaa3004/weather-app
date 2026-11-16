@@ -2,12 +2,10 @@ import type {
   AirQuality,
   DailyForecast,
   HourlyPoint,
-  UvIndex,
   WeatherCondition,
-  WeatherReport,
+  ProxyReport,
 } from '../src/types/weather';
 import type {
-  OpenMeteoUv,
   OwmAirPollution,
   OwmCondition,
   OwmCurrent,
@@ -50,8 +48,11 @@ function severity(id: number): number {
  * Picks the condition that represents a whole day: the most severe one, and
  * between equals the reading closest to early afternoon.
  */
-function representative(entries: OwmForecastEntry[], timezoneOffset: number): WeatherCondition {
-  let best: OwmForecastEntry | undefined;
+function representative(
+  entries: Array<Pick<OwmForecastEntry, 'dt' | 'weather'>>,
+  timezoneOffset: number,
+): WeatherCondition {
+  let best: Pick<OwmForecastEntry, 'dt' | 'weather'> | undefined;
   let bestScore = -Infinity;
   for (const entry of entries) {
     const id = entry.weather[0]?.id ?? 800;
@@ -65,10 +66,7 @@ function representative(entries: OwmForecastEntry[], timezoneOffset: number): We
   return toCondition(best?.weather[0]);
 }
 
-export function buildDaily(
-  forecast: OwmForecast,
-  current: OwmCurrent,
-): DailyForecast[] {
+export function buildDaily(forecast: OwmForecast, current: OwmCurrent): DailyForecast[] {
   const offset = current.timezone;
   const byDate = new Map<string, OwmForecastEntry[]>();
   for (const entry of forecast.list) {
@@ -84,13 +82,14 @@ export function buildDaily(
   for (const [date, entries] of byDate) {
     const temps = entries.flatMap((entry) => [entry.main.temp_min, entry.main.temp_max]);
     // The forecast only covers what is left of today, so fold in the live reading.
-    if (date === today) temps.push(current.main.temp);
+    const isToday = date === today;
+    if (isToday) temps.push(current.main.temp);
     days.push({
       date,
       high: Math.max(...temps),
       low: Math.min(...temps),
       pop: Math.max(...entries.map((entry) => entry.pop ?? 0)),
-      condition: representative(entries, offset),
+      condition: representative(isToday ? [current, ...entries] : entries, offset),
     });
   }
 
@@ -126,21 +125,14 @@ function buildAir(raw: OwmAirPollution | null): AirQuality | null {
   return { index, pm25: pm2_5, pm10, o3, no2 };
 }
 
-function buildUv(raw: OpenMeteoUv | null): UvIndex | null {
-  const now = raw?.current?.uv_index;
-  if (typeof now !== 'number') return null;
-  return { now, max: raw?.daily?.uv_index_max?.[0] ?? now };
-}
-
 export interface ProviderData {
   place: OwmGeoResult | null;
   current: OwmCurrent;
   forecast: OwmForecast;
   air: OwmAirPollution | null;
-  uv: OpenMeteoUv | null;
 }
 
-export function buildReport({ place, current, forecast, air, uv }: ProviderData, now = Date.now()): WeatherReport {
+export function buildReport({ place, current, forecast, air }: ProviderData, now = Date.now()): ProxyReport {
   const hourly = buildHourly(forecast, current);
   const temps = hourly.map((point) => point.temp);
 
@@ -175,7 +167,6 @@ export function buildReport({ place, current, forecast, air, uv }: ProviderData,
     hourly,
     daily: buildDaily(forecast, current),
     air: buildAir(air),
-    uv: buildUv(uv),
     fetchedAt: Math.floor(now / 1000),
   };
 }

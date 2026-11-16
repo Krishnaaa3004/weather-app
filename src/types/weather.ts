@@ -1,7 +1,7 @@
 /**
  * The contract between the Netlify Function and the client. The function
- * normalises three OpenWeatherMap endpoints plus Open-Meteo into this one
- * shape, so the UI never sees a raw provider response.
+ * normalises four OpenWeatherMap endpoints into one shape, so the UI never
+ * sees a raw provider response.
  *
  * All values are metric (°C, m/s, hPa, metres); the client converts for display.
  * All timestamps are unix seconds, UTC.
@@ -88,6 +88,12 @@ export interface WeatherReport {
   uv: UvIndex | null;
   fetchedAt: number;
 }
+
+/**
+ * What the proxy returns. UV is added in the browser: Open-Meteo needs no key
+ * and rate-limits by IP, so calling it from shared function hosts is unreliable.
+ */
+export type ProxyReport = Omit<WeatherReport, 'uv'>;
 
 export type ApiErrorCode = 'bad_request' | 'not_found' | 'rate_limited' | 'upstream' | 'config';
 
