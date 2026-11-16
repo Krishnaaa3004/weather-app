@@ -2,12 +2,17 @@ import { useCallback, useState } from 'react';
 import { readStored, writeStored } from '../lib/storage';
 
 export interface RecentPlace {
-  label: string;
+  name: string;
+  country: string;
+  state?: string;
   lat: number;
   lon: number;
 }
 
-const KEY = 'overhead:recent';
+/** "Tokyo, JP" */
+export const placeLabel = (place: RecentPlace) => (place.country ? `${place.name}, ${place.country}` : place.name);
+
+const KEY = 'overhead:places';
 const LIMIT = 5;
 
 function isRecentList(value: unknown): value is RecentPlace[] {
@@ -16,7 +21,8 @@ function isRecentList(value: unknown): value is RecentPlace[] {
     value.every(
       (item: unknown) =>
         typeof item === 'object' && item !== null &&
-        typeof (item as RecentPlace).label === 'string' &&
+        typeof (item as RecentPlace).name === 'string' &&
+        typeof (item as RecentPlace).country === 'string' &&
         Number.isFinite((item as RecentPlace).lat) &&
         Number.isFinite((item as RecentPlace).lon),
     )
@@ -33,7 +39,7 @@ export function useRecentSearches() {
 
   const remember = useCallback((place: RecentPlace) => {
     setRecent((previous) => {
-      const next = [place, ...previous.filter((item) => item.label !== place.label)].slice(0, LIMIT);
+      const next = [place, ...previous.filter((item) => placeLabel(item) !== placeLabel(place))].slice(0, LIMIT);
       writeStored(KEY, next);
       return next;
     });

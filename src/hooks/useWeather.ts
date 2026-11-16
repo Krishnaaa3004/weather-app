@@ -62,9 +62,11 @@ export function useWeather(initial: WeatherTarget): UseWeather {
 
     try {
       const proxy = await fetchReport(target, current.signal);
-      const report: WeatherReport = { ...proxy, uv: null };
-      const { lat, lon } = report.location;
-      lastTarget.current = { kind: 'coords', lat, lon };
+      const known = target.kind === 'coords' ? target.place : undefined;
+      const location = { ...proxy.location, ...known };
+      const report: WeatherReport = { ...proxy, location, uv: null };
+      const { lat, lon, name, country, state } = location;
+      lastTarget.current = { kind: 'coords', lat, lon, place: { name, country, state } };
       loadedAt.current = Date.now();
       dispatch({ type: 'success', report });
 

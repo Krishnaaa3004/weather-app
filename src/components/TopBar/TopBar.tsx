@@ -1,5 +1,5 @@
 import { type FormEvent, useId, useRef, useState } from 'react';
-import type { RecentPlace } from '../../hooks/useRecentSearches';
+import { type RecentPlace, placeLabel } from '../../hooks/useRecentSearches';
 import type { UnitSystem } from '../../lib/units';
 import styles from './TopBar.module.css';
 
@@ -93,7 +93,7 @@ export function TopBar({
             <p className="label">Recent</p>
             <ul>
               {recent.map((place) => (
-                <li key={place.label}>
+                <li key={placeLabel(place)}>
                   <button
                     type="button"
                     className={styles.recentItem}
@@ -102,7 +102,7 @@ export function TopBar({
                       setIsOpen(false);
                     }}
                   >
-                    {place.label}
+                    {placeLabel(place)}
                   </button>
                 </li>
               ))}

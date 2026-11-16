@@ -1,9 +1,20 @@
 import type { ApiErrorBody, ProxyReport, UvIndex } from '../types/weather';
 
-/** Where to get weather for: a typed city name, or coordinates. */
+/** The name a place was found under, kept so reopening it shows the same name. */
+export interface KnownPlace {
+  name: string;
+  country: string;
+  state?: string;
+}
+
+/**
+ * Where to get weather for: a typed city name, or coordinates. Coordinates
+ * of a place the user searched before carry its name, because reverse
+ * geocoding the same point returns the district ("Chiyoda"), not the city ("Tokyo").
+ */
 export type WeatherTarget =
   | { kind: 'city'; query: string }
-  | { kind: 'coords'; lat: number; lon: number };
+  | { kind: 'coords'; lat: number; lon: number; place?: KnownPlace };
 
 export type WeatherErrorKind = 'not_found' | 'network' | 'rate_limited' | 'server';
 

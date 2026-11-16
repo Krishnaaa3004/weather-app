@@ -39,10 +39,12 @@ const LOCATION_COPY: Record<GeolocationProblem, { title: string; body: string }>
   },
 };
 
+const targetFor = ({ lat, lon, ...place }: RecentPlace): WeatherTarget => ({ kind: 'coords', lat, lon, place });
+
 /** Reopen the last place viewed; first-time visitors get a default city, never a permission prompt. */
 function initialTarget(): WeatherTarget {
   const last = readRecentPlaces()[0];
-  return last ? { kind: 'coords', lat: last.lat, lon: last.lon } : { kind: 'city', query: DEFAULT_CITY };
+  return last ? targetFor(last) : { kind: 'city', query: DEFAULT_CITY };
 }
 
 export function App() {
@@ -72,8 +74,8 @@ export function App() {
     async (target: WeatherTarget) => {
       const loaded = await load(target);
       if (!loaded) return;
-      const { name, country, lat, lon } = loaded.location;
-      remember({ label: country ? `${name}, ${country}` : name, lat, lon });
+      const { name, country, state, lat, lon } = loaded.location;
+      remember({ name, country, state, lat, lon });
       window.scrollTo({ top: 0 });
     },
     [load, remember],
@@ -85,7 +87,7 @@ export function App() {
   }, [geolocation, open]);
 
   const onPickRecent = useCallback(
-    (place: RecentPlace) => void open({ kind: 'coords', lat: place.lat, lon: place.lon }),
+    (place: RecentPlace) => void open(targetFor(place)),
     [open],
   );
 
