@@ -6,6 +6,9 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Reserve the scrollbar's width from the first paint, so the page does not
+     shift sideways when the content loads and becomes scrollable. */
+  scrollbar-gutter: stable;
   color-scheme: dark;
   transition: --sky-top 1.4s ease, --sky-mid 1.4s ease, --sky-low 1.4s ease;
 }
@@ -111,5 +114,31 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Static shell from index.html, shown until React mounts. It sits where the
+ * top bar's wordmark will be, so the swap causes no layout shift.
+ */
+.shell {
+  display: flex;
+  align-items: center;
+  /* Padding, not margin: a top margin would collapse through to <body> and
+     move the whole page down until React mounts. */
+  box-sizing: content-box;
+  height: 2.75rem;
+  padding: var(--space-3) var(--gutter);
+}
+
+.shell-mark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding-block: var(--space-2);
   }
 }

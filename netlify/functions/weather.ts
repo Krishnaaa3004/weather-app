@@ -22,13 +22,18 @@ export const config = { path: '/api/weather' };
 const MAX_QUERY_LENGTH = 80;
 
 function json(body: unknown, status: number, cacheSeconds = 0): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': cacheSeconds > 0 ? `public, max-age=${cacheSeconds}` : 'no-store',
-    },
-  });
+  const headers: Record<string, string> = {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': cacheSeconds > 0 ? `public, max-age=${cacheSeconds}` : 'no-store',
+  };
+  if (cacheSeconds > 0) {
+    // Let Netlify's CDN answer repeat requests for the same place without
+    // running the function, and serve a slightly old report while it refreshes.
+    headers['netlify-cdn-cache-control'] =
+      `public, durable, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds * 6}`;
+    headers['netlify-vary'] = 'query';
+  }
+  return new Response(JSON.stringify(body), { status, headers });
 }
 
 function fail(status: number, error: ApiErrorCode, message: string): Response {
